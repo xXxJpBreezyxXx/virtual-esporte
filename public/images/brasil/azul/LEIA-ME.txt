@@ -1,0 +1,10 @@
+Coloque aqui as fotos reais da camisa AZUL (Reserva) do Brasil.
+
+Nomeie os arquivos como:
+- 1.jpg (ou .png, .webp)
+- 2.jpg
+- 3.jpg
+- 4.jpg
+- ... etc
+
+O sistema vai ler automaticamente até 10 imagens.
