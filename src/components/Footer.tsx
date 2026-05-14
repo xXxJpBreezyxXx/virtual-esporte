@@ -1,6 +1,8 @@
 "use client";
 
 import { ShieldCheck, RotateCcw, PackageCheck, CreditCard, Lock, MessageCircle, Mail, Clock } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   const trustBadges = [
@@ -32,17 +34,17 @@ export default function Footer() {
   ];
 
   const usefulLinks = [
-    { label: "Política de Trocas e Devoluções", href: "#" },
-    { label: "Termos de Uso", href: "#" },
-    { label: "Política de Privacidade", href: "#" },
-    { label: "Perguntas Frequentes", href: "#" },
+    { label: "Política de Trocas e Devoluções", href: "/trocas-e-devolucoes" },
+    { label: "Termos de Uso", href: "/termos-de-servico" },
+    { label: "Política de Privacidade", href: "/politica-de-privacidade" },
+    { label: "Perguntas Frequentes", href: "/faq" },
   ];
 
   const siteLinks = [
-    { label: "Início", href: "#inicio" },
-    { label: "Brasil", href: "#brasil" },
-    { label: "Seleções", href: "#selecoes" },
-    { label: "Como Comprar", href: "#comprar" },
+    { label: "Início", href: "/#inicio" },
+    { label: "Brasil", href: "/#brasil" },
+    { label: "Seleções", href: "/#selecoes" },
+    { label: "Como Comprar", href: "/#comprar" },
   ];
 
   return (
@@ -76,20 +78,22 @@ export default function Footer() {
 
           {/* Column 1: Brand */}
           <div className="lg:col-span-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/logo.png"
               alt="Virtual Esporte"
+              width={160}
+              height={40}
               className="h-10 w-auto mb-4 opacity-90"
             />
             <p className="text-gray-400 text-sm leading-relaxed mb-4">
               Camisas oficiais com qualidade Tailandesa 1:1 para a Copa do Mundo 2026.
               Vista a paixão nacional com o melhor padrão do mercado.
             </p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/images/logoFIFA.png"
               alt="FIFA World Cup 2026"
+              width={48}
+              height={48}
               className="h-12 w-auto opacity-60"
             />
           </div>
@@ -102,12 +106,12 @@ export default function Footer() {
             <ul className="space-y-3">
               {siteLinks.map((link) => (
                 <li key={link.href}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-gray-400 text-sm hover:text-white transition-colors duration-200"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -121,12 +125,12 @@ export default function Footer() {
             <ul className="space-y-3">
               {usefulLinks.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-gray-400 text-sm hover:text-white transition-colors duration-200"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

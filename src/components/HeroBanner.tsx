@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { useCheckout } from "@/components/CheckoutProvider";
@@ -150,12 +151,14 @@ export default function HeroBanner() {
                   <div className="relative w-full max-w-md xl:max-w-lg aspect-square">
                     {/* Glow effect behind image */}
                     <div className={`absolute inset-0 ${slide.glowColor} blur-[100px] rounded-full opacity-20 animate-pulse`} />
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={slide.image}
                       alt={slide.title1}
-                      className="w-full h-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-float"
+                      fill
+                      className="object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-float"
                       style={{ transformStyle: "preserve-3d" }}
+                      priority
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
                 </motion.div>
@@ -164,11 +167,13 @@ export default function HeroBanner() {
               /* Overlay Card Layout for Banner */
               <div className="w-full h-[60vh] sm:h-[70vh] md:h-[80vh] relative rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 group flex items-center">
                 {/* Background Image */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={slide.image}
                   alt={slide.title1}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-[10s] group-hover:scale-105"
+                  fill
+                  className="object-cover transition-transform duration-[10s] group-hover:scale-105"
+                  priority
+                  sizes="100vw"
                 />
 
                 {/* Dark Overlays for Readability */}

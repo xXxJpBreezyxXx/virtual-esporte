@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { CheckoutProvider } from "@/components/CheckoutProvider";
 
@@ -86,6 +87,20 @@ export default function RootLayout({
       className={`${bebasNeue.variable} ${inter.variable} h-full`}
     >
       <body className="min-h-full flex flex-col font-sans">
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-MYMY0SSFEQ"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-MYMY0SSFEQ');
+          `}
+        </Script>
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}

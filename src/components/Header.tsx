@@ -1,16 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { ShoppingBag, Menu, X } from "lucide-react";
+import Link from "next/link";
 
 const AnimatedNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   return (
-    <a href={href} className="group relative inline-block overflow-hidden text-sm font-bold uppercase tracking-widest" style={{ height: '1.25rem' }}>
+    <Link href={href} className="group relative inline-block overflow-hidden text-sm font-bold uppercase tracking-widest" style={{ height: '1.25rem' }}>
       <div className="flex flex-col transition-transform duration-300 ease-out group-hover:-translate-y-1/2">
         <span className="block leading-5 h-5 text-gray-300">{children}</span>
         <span className="block leading-5 h-5 text-[#C9A84C]">{children}</span>
       </div>
-    </a>
+    </Link>
   );
 };
 
@@ -38,10 +40,10 @@ export default function Header() {
   }, [isOpen]);
 
   const navLinksData = [
-    { label: "Início", href: "#inicio" },
-    { label: "Brasil", href: "#brasil" },
-    { label: "Seleções", href: "#selecoes" },
-    { label: "Comprar", href: "#comprar" },
+    { label: "Início", href: "/#inicio" },
+    { label: "Brasil", href: "/#brasil" },
+    { label: "Seleções", href: "/#selecoes" },
+    { label: "Comprar", href: "/#comprar" },
   ];
 
   return (
@@ -59,14 +61,16 @@ export default function Header() {
       {/* Main Row */}
       <div className="flex items-center justify-between w-full gap-x-5 sm:gap-x-8">
         {/* Logo */}
-        <a href="#inicio" className="flex items-center shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <Link href="/#inicio" className="flex items-center shrink-0">
+          <Image
             src="/logo.png"
             alt="Virtual Esporte"
+            width={160}
+            height={44}
             className="h-10 sm:h-11 w-auto object-contain"
+            priority
           />
-        </a>
+        </Link>
 
         {/* Desktop Nav Links */}
         <nav className="hidden sm:flex items-center space-x-6">
@@ -108,14 +112,14 @@ export default function Header() {
       >
         <nav className="flex flex-col items-center space-y-4 text-base w-full">
           {navLinksData.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               onClick={() => setIsOpen(false)}
               className="text-gray-300 hover:text-[#C9A84C] transition-colors w-full text-center font-bold uppercase tracking-widest text-sm"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="flex flex-col items-center mt-5 w-full px-4">

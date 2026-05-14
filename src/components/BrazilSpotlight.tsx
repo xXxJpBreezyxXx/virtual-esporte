@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, CheckCircle2 } from "lucide-react";
 import { useCheckout } from "@/components/CheckoutProvider";
+
+const MotionImage = motion(Image);
 
 export default function BrazilSpotlight() {
   const [activeTab, setActiveTab] = useState<"home" | "away">("home");
@@ -168,9 +171,11 @@ export default function BrazilSpotlight() {
               </div>
 
               <div className={`md:w-1/2 min-h-[400px] flex items-center justify-center relative p-8 ${current.mediaType === 'video' ? 'bg-black' : ''}`}>
-                <img 
+                <Image 
                   src="/images/logoFIFA.png" 
                   alt="FIFA Logo" 
+                  width={56}
+                  height={56}
                   className="absolute bottom-4 right-4 md:bottom-6 md:right-6 w-10 md:w-14 h-auto z-30 opacity-90 drop-shadow-md rounded-xl bg-white/10 backdrop-blur-sm p-1 border border-white/20" 
                 />
                 
@@ -199,16 +204,18 @@ export default function BrazilSpotlight() {
                     }}
                   />
                 ) : (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <motion.img
-                    initial={{ rotateY: 15, scale: 0.9 }}
-                    animate={{ rotateY: 0, scale: 1 }}
-                    transition={{ duration: 0.8, type: "spring" }}
-                    src={current.mediaUrl}
-                    alt={current.title}
-                    className="w-full h-full object-contain relative z-10 drop-shadow-2xl animate-float"
-                    style={{ maxHeight: "500px" }}
-                  />
+                  <div className="relative w-full h-full min-h-[500px]">
+                    <MotionImage
+                      initial={{ rotateY: 15, scale: 0.9 }}
+                      animate={{ rotateY: 0, scale: 1 }}
+                      transition={{ duration: 0.8, type: "spring" }}
+                      src={current.mediaUrl}
+                      alt={current.title}
+                      fill
+                      className="object-contain relative z-10 drop-shadow-2xl animate-float"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
                 )}
               </div>
             </motion.div>

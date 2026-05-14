@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, CreditCard, QrCode, Loader2, CheckCircle2, Truck, ArrowRight, ArrowLeft, User, MapPin, MessageCircle, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 
@@ -238,21 +239,23 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                 {/* Image Carousel */}
                 <div className="relative w-full aspect-square mb-4 rounded-2xl overflow-hidden group max-h-[220px] md:max-h-[280px]">
                   <AnimatePresence mode="wait">
-                    <motion.img
+                    <motion.div
                       key={galleryIndex}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      src={allImages[galleryIndex]}
-                      alt={`${product.name} - Foto ${galleryIndex + 1}`}
-                      className="w-full h-full object-cover cursor-pointer"
-                      onClick={() => setLightboxOpen(true)}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = product.image;
-                      }}
-                    />
+                      className="w-full h-full relative"
+                    >
+                      <Image
+                        src={allImages[galleryIndex]}
+                        alt={`${product.name} - Foto ${galleryIndex + 1}`}
+                        fill
+                        className="object-cover cursor-pointer"
+                        onClick={() => setLightboxOpen(true)}
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                      />
+                    </motion.div>
                   </AnimatePresence>
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A192F]/80 to-transparent opacity-60 pointer-events-none" />
                   
@@ -536,15 +539,15 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               >
                 <X className="w-6 h-6" />
               </button>
-              <img
-                src={allImages[galleryIndex]}
-                alt={`${product.name} - Ampliada`}
-                className="w-full h-auto max-h-[85vh] object-contain rounded-2xl"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = product.image;
-                }}
-              />
+              <div className="relative w-full h-[60vh] md:h-[80vh]">
+                <Image
+                  src={allImages[galleryIndex]}
+                  alt={`${product.name} - Ampliada`}
+                  fill
+                  className="object-contain rounded-2xl"
+                  sizes="100vw"
+                />
+              </div>
               {hasCarousel && (
                 <>
                   <button

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 
 export default function NationsGrid() {
@@ -64,10 +65,11 @@ export default function NationsGrid() {
                 className="w-72 sm:w-80 shrink-0 bg-[#020F2A] rounded-2xl overflow-hidden border border-[#505B73]/30 hover:border-[#00B8FF] hover:shadow-[0_0_20px_rgba(0,184,255,0.2)] transition-all duration-300 group"
               >
                 <div className="h-64 relative overflow-hidden bg-[#010B1E]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={nation.image}
                     alt={`Camisa da Seleção da ${nation.name} - Copa 2026 Padrão Original 1:1`}
+                    width={320}
+                    height={256}
                     className="w-full h-full object-cover opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-500"
                   />
                   <div className="absolute top-4 right-4 bg-[#00B8FF] text-[#020F2A] text-xs font-bold px-3 py-1 rounded-full uppercase">
