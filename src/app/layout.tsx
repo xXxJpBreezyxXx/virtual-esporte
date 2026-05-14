@@ -24,6 +24,16 @@ export const metadata: Metadata = {
   title: "Virtual Esporte | Camisas de Seleções Premium - Copa 2026",
   description: "Compre Camisas de Seleções da Copa do Mundo 2026. Qualidade Tailandesa 1:1, Padrão Oficial, Frete Grátis e Compra Segura. Vista a sua paixão!",
   keywords: "camisas de futebol, camisas de seleções, copa do mundo 2026, camisa tailandesa 1:1, camisa de time premium, virtual esporte, camisa do brasil, camisa da argentina",
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico", sizes: "48x48" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   openGraph: {
     title: "Virtual Esporte | Camisas de Seleções Premium - Copa 2026",
     description: "Camisas Tailandesas 1:1 Padrão Oficial. Frete Grátis para todo o Brasil. Qualidade Impecável.",
@@ -31,6 +41,20 @@ export const metadata: Metadata = {
     siteName: "Virtual Esporte",
     locale: "pt_BR",
     type: "website",
+    images: [
+      {
+        url: "https://virtualesporte.com.br/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Virtual Esporte - Camisas de Seleções Copa 2026",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Virtual Esporte | Camisas Premium Copa 2026",
+    description: "Camisas Tailandesas 1:1 Padrão Oficial. Frete Grátis para todo o Brasil.",
+    images: ["https://virtualesporte.com.br/og-image.png"],
   },
   robots: {
     index: true,
