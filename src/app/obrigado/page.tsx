@@ -93,7 +93,7 @@ export default function ThankYouPage() {
               VOLTAR PARA A LOJA
             </Link>
             <a
-              href="https://wa.me/55NUMERO_AQUI"
+              href="https://wa.me/5516976045778"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-4 bg-green-500 text-white font-bebas text-xl rounded-full hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
