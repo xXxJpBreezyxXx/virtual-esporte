@@ -124,10 +124,14 @@ export async function POST(request: Request) {
           console.log('Metadata recebido:', JSON.stringify(checkout?.metadata));
         }
 
-        // Notify Admin
-        const adminNumber = '5516976045778';
+        // Notify Admins (Sócios)
+        const adminNumbers = ['5516992732412', '5516992572936'];
         const adminMessage = `🚀 *Nova Venda Confirmada!*\n\nCliente: ${customer?.name}\nValor: R$ ${(checkout?.amount / 100).toFixed(2)}\nProduto: Camisa Copa 2026`;
-        await sendWhatsAppMessage(adminNumber, adminMessage);
+        
+        for (const number of adminNumbers) {
+          await sendWhatsAppMessage(number, adminMessage);
+          console.log(`✅ Notificação de venda enviada para o sócio: ${number}`);
+        }
         
         break;
 
