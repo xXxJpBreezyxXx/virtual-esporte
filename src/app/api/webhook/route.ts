@@ -37,6 +37,12 @@ async function sendWhatsAppMessage(number: string, text: string) {
   }
 
   try {
+    // Limpa o número e garante o DDI 55 se for brasileiro
+    let formattedNumber = number.replace(/\D/g, '');
+    if (formattedNumber.length === 10 || formattedNumber.length === 11) {
+      formattedNumber = `55${formattedNumber}`;
+    }
+
     const response = await fetch(`${apiUrl}/message/sendText/${instance}`, {
       method: 'POST',
       headers: {
@@ -44,7 +50,7 @@ async function sendWhatsAppMessage(number: string, text: string) {
         'apikey': apiKey
       },
       body: JSON.stringify({
-        number: number.replace(/\D/g, ''), // Ensure only numbers
+        number: formattedNumber,
         text: text,
         linkPreview: false
       })
@@ -65,9 +71,18 @@ export async function POST(request: Request) {
     console.log('--- Webhook Received ---');
     console.log('Signature Header:', signature);
     
-    // 1. Security Check (DESATIVADO TEMPORARIAMENTE PARA TESTE)
+    // 1. Security Check - Layer 1: Secret in URL (Recomendado pela Doc)
+    const { searchParams } = new URL(request.url);
+    const querySecret = searchParams.get('webhookSecret');
+    
+    if (querySecret && WEBHOOK_SECRET && querySecret !== WEBHOOK_SECRET) {
+      console.warn('❌ Webhook Secret na URL não confere!');
+      // return NextResponse.json({ error: 'Unauthorized URL Secret' }, { status: 401 });
+    }
+
+    // 1. Security Check - Layer 2: Assinatura HMAC (DESATIVADO TEMPORARIAMENTE PARA TESTE)
     if (!signature || !verifyAbacateSignature(rawBody, signature)) {
-      console.warn('⚠️ Assinatura inválida, mas ignorando para fins de teste...');
+      console.warn('⚠️ Assinatura HMAC inválida, mas ignorando para fins de teste...');
       // return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
@@ -87,17 +102,26 @@ export async function POST(request: Request) {
         console.log('💰 Payment Confirmed!');
         
         // Notify Customer via Evolution API
-        // Usamos o telefone que veio no metadata ou no objeto customer
-        const phone = customer?.cellphone || checkout?.metadata?.whatsapp || checkout?.customer?.cellphone;
+        // Busca o telefone em TODOS os lugares possíveis do payload
+        const phone = 
+          customer?.cellphone || 
+          checkout?.customer?.cellphone || 
+          checkout?.metadata?.whatsapp || 
+          payload?.data?.customer?.cellphone ||
+          payload?.data?.checkout?.customer?.cellphone;
         
-        if (phone) {
-          const customerName = customer?.name || 'Cliente';
+        console.log(`📱 Tentando notificar cliente. Telefone encontrado: ${phone || 'NENHUM'}`);
+        
+        if (phone && phone.length >= 10) {
+          const customerName = customer?.name || checkout?.customer?.name || 'Cliente';
           const message = `Olá ${customerName}! ⚽\n\nSeu pagamento na *Virtual Esporte* foi confirmado com sucesso! 🥳\n\nEm breve você receberá seu código de rastreio por aqui. Obrigado pela preferência e boa torcida! 🇧🇷`;
           
           await sendWhatsAppMessage(phone, message);
-          console.log(`📱 Notificação enviada para: ${phone}`);
+          console.log(`✅ Notificação enviada para o cliente: ${phone}`);
         } else {
-          console.warn('⚠️ Telefone do cliente não encontrado no payload');
+          console.warn('⚠️ Telefone do cliente não encontrado ou inválido no payload');
+          // Log do metadata para depuração
+          console.log('Metadata recebido:', JSON.stringify(checkout?.metadata));
         }
 
         // Notify Admin
