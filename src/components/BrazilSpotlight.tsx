@@ -169,20 +169,6 @@ export default function BrazilSpotlight() {
                   </button>
 
                   <div className="flex justify-center sm:justify-start">
-                    <button
-                      onClick={() => openCheckout({
-                        id: "teste-1-real",
-                        name: "Produto de Teste R$ 1",
-                        price: 1.00,
-                        image: activeTab === 'home' ? '/images/brazil_home.png' : '/images/brazil_away.png',
-                        gallery: activeTab === 'home'
-                          ? ['/images/brasil/amarelo/1.png']
-                          : ['/images/brasil/azul/1.png']
-                      })}
-                      className="text-[10px] text-gray-500 hover:text-white underline transition-colors opacity-50 hover:opacity-100 uppercase tracking-widest font-bold"
-                    >
-                      🧪 Testar Checkout (R$ 1,00)
-                    </button>
                   </div>
                 </div>
               </div>
