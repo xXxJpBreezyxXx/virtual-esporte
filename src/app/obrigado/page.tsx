@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { CheckCircle2, Package, Truck, MessageCircle, ArrowLeft } from "lucide-react";
@@ -8,6 +8,27 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export default function ThankYouPage() {
+  useEffect(() => {
+    // GTM Event: purchase
+    // O valor está hardcoded como 159.90 pois todas as camisas estão com esse preço único.
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'purchase',
+        ecommerce: {
+          transaction_id: `T_${new Date().getTime()}`,
+          value: 159.90,
+          currency: 'BRL',
+          items: [{
+            item_id: 'camisa-worldcup',
+            item_name: 'Camisa Seleção (Personalizada)',
+            price: 159.90,
+            quantity: 1
+          }]
+        }
+      });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-yellow-400 selection:text-black">
       <Header />

@@ -67,12 +67,29 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
 
   // Reset state when modal opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && product) {
       setStep(1);
       setGalleryIndex(0);
       setLightboxOpen(false);
+
+      // GTM Event: view_item
+      if (typeof window !== 'undefined' && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'view_item',
+          ecommerce: {
+            currency: 'BRL',
+            value: product.price,
+            items: [{
+              item_id: product.id,
+              item_name: product.name,
+              price: product.price,
+              quantity: 1
+            }]
+          }
+        });
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, product]);
 
   if (!product) return null;
 
@@ -90,6 +107,23 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // GTM Event: begin_checkout
+    if (typeof window !== 'undefined' && (window as any).dataLayer && product) {
+      (window as any).dataLayer.push({
+        event: 'begin_checkout',
+        ecommerce: {
+          currency: 'BRL',
+          value: product.price,
+          items: [{
+            item_id: product.id,
+            item_name: product.name,
+            price: product.price,
+            quantity: 1
+          }]
+        }
+      });
+    }
 
     try {
       const response = await fetch('/api/checkout', {
