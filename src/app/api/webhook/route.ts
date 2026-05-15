@@ -14,13 +14,16 @@ function verifyAbacateSignature(rawBody: string, signatureFromHeader: string) {
   const expectedSig = crypto
     .createHmac("sha256", WEBHOOK_SECRET)
     .update(bodyBuffer)
-    .digest("base64");
+    .digest("hex"); // Alterado para HEX
 
-  const A = Buffer.from(expectedSig);
-  const B = Buffer.from(signatureFromHeader);
+  console.log('--- Signature Debug ---');
+  console.log('Expected (HEX):', expectedSig);
+  console.log('Received:', signatureFromHeader);
+
+  // Alguns sistemas usam base64, vamos testar hex primeiro.
+  // Se ainda falhar, o problema é o SECRET.
   
-  if (A.length !== B.length) return false;
-  return crypto.timingSafeEqual(A, B);
+  return expectedSig === signatureFromHeader;
 }
 
 /**
@@ -60,50 +63,60 @@ async function sendWhatsAppMessage(number: string, text: string) {
 export async function POST(request: Request) {
   try {
     const rawBody = await request.text();
-    const signature = request.headers.get('X-Webhook-Signature');
+    const signature = request.headers.get('x-webhook-signature') || request.headers.get('X-Webhook-Signature');
 
+    console.log('--- Webhook Received ---');
+    console.log('Signature Header:', signature);
+    
     // 1. Security Check
     if (!signature || !verifyAbacateSignature(rawBody, signature)) {
-      console.warn('Invalid webhook signature received');
+      console.warn('❌ Invalid webhook signature received. Check your ABACATEPAY_WEBHOOK_SECRET.');
+      // Durante o teste, você pode comentar o "return" abaixo para ignorar a assinatura e ver se o resto funciona
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
     const payload = JSON.parse(rawBody);
     const { event, data } = payload;
 
-    console.log(`Webhook received: ${event}`, data);
+    // Ajuste para a estrutura real: data.checkout e data.customer
+    const checkout = data.checkout;
+    const customer = data.customer;
+
+    console.log(`✅ Event: ${event}`);
+    console.log(`💰 Checkout ID: ${checkout?.id}`);
 
     // 2. Handle Events
     switch (event) {
       case 'checkout.completed':
-        // Payment approved!
-        console.log('💰 Payment Confirmed:', data.id);
+        console.log('💰 Payment Confirmed!');
         
         // Notify Customer via Evolution API
-        if (data.customer?.cellphone) {
-          const customerName = data.customer.name || 'Cliente';
+        // Usamos o telefone que veio no metadata ou no objeto customer
+        const phone = customer?.cellphone || checkout?.metadata?.whatsapp || checkout?.customer?.cellphone;
+        
+        if (phone) {
+          const customerName = customer?.name || 'Cliente';
           const message = `Olá ${customerName}! ⚽\n\nSeu pagamento na *Virtual Esporte* foi confirmado com sucesso! 🥳\n\nEm breve você receberá seu código de rastreio por aqui. Obrigado pela preferência e boa torcida! 🇧🇷`;
           
-          await sendWhatsAppMessage(data.customer.cellphone, message);
+          await sendWhatsAppMessage(phone, message);
+          console.log(`📱 Notificação enviada para: ${phone}`);
+        } else {
+          console.warn('⚠️ Telefone do cliente não encontrado no payload');
         }
 
-        // Notify Admin (optional)
-        const adminNumber = '5516976045778'; // Your number
-        const adminMessage = `🚀 *Nova Venda Confirmada!*\n\nCliente: ${data.customer?.name}\nValor: R$ ${(data.amount / 100).toFixed(2)}\nProduto: Camisa Copa 2026`;
+        // Notify Admin
+        const adminNumber = '5516976045778';
+        const adminMessage = `🚀 *Nova Venda Confirmada!*\n\nCliente: ${customer?.name}\nValor: R$ ${(checkout?.amount / 100).toFixed(2)}\nProduto: Camisa Copa 2026`;
         await sendWhatsAppMessage(adminNumber, adminMessage);
         
         break;
 
       case 'checkout.refunded':
-        console.log('↩️ Payment Refunded:', data.id);
-        break;
-
-      case 'checkout.disputed':
-        console.log('⚠️ Payment Disputed:', data.id);
+        console.log('↩️ Payment Refunded:', checkout?.id);
         break;
 
       default:
-        console.log(`Unhandled event type: ${event}`);
+        console.log(`ℹ️ Unhandled event type: ${event}`);
     }
 
     return NextResponse.json({ received: true }, { status: 200 });

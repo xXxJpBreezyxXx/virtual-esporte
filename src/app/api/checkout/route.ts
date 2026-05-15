@@ -119,6 +119,7 @@ export async function POST(request: Request) {
           cidade: customer.address.city,
           estado: customer.address.state,
           cep: customer.address.cep,
+          whatsapp: customer.phone.replace(/\D/g, ''),
         },
         methods: ['PIX', 'CARD'],
         returnUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/obrigado`,
