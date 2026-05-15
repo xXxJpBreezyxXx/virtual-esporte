@@ -44,10 +44,10 @@ export async function POST(request: Request) {
       // return NextResponse.json({ error: 'Unauthorized URL Secret' }, { status: 401 });
     }
 
-    // 1. Security Check - Layer 2: Assinatura HMAC (DESATIVADO TEMPORARIAMENTE PARA TESTE)
+    // 1. Security Check - Layer 2: Assinatura HMAC
     if (!signature || !verifyAbacateSignature(rawBody, signature)) {
-      console.warn('⚠️ Assinatura HMAC inválida, mas ignorando para fins de teste...');
-      // return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+      console.warn('⚠️ Assinatura HMAC inválida. Bloqueando requisição.');
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
     const payload = JSON.parse(rawBody);
