@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'node:crypto';
+import { Client } from '@upstash/qstash';
+import { sendWhatsAppMessage } from '@/lib/whatsapp';
 
 // Public HMAC key or Secret from AbacatePay dashboard
 const WEBHOOK_SECRET = process.env.ABACATEPAY_WEBHOOK_SECRET || "";
@@ -23,45 +25,7 @@ function verifyAbacateSignature(rawBody: string, signatureFromHeader: string) {
   return expectedSig === signatureFromHeader;
 }
 
-/**
- * Sends a message via Evolution API
- */
-async function sendWhatsAppMessage(number: string, text: string) {
-  const apiUrl = process.env.EVOLUTION_API_URL;
-  const apiKey = process.env.EVOLUTION_API_KEY;
-  const instance = process.env.EVOLUTION_INSTANCE_NAME;
-
-  if (!apiUrl || !apiKey || !instance) {
-    console.warn('Evolution API not configured');
-    return;
-  }
-
-  try {
-    // Limpa o número e garante o DDI 55 se for brasileiro
-    let formattedNumber = number.replace(/\D/g, '');
-    if (formattedNumber.length === 10 || formattedNumber.length === 11) {
-      formattedNumber = `55${formattedNumber}`;
-    }
-
-    const response = await fetch(`${apiUrl}/message/sendText/${instance}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': apiKey
-      },
-      body: JSON.stringify({
-        number: formattedNumber,
-        text: text,
-        linkPreview: false
-      })
-    });
-    
-    const data = await response.json();
-    console.log('Evolution API response:', data);
-  } catch (error) {
-    console.error('Error sending WhatsApp message:', error);
-  }
-}
+// Removed local sendWhatsAppMessage in favor of shared util
 
 export async function POST(request: Request) {
   try {
@@ -131,6 +95,19 @@ export async function POST(request: Request) {
         for (const number of adminNumbers) {
           await sendWhatsAppMessage(number, adminMessage);
           console.log(`✅ Notificação de venda enviada para o sócio: ${number}`);
+        }
+
+        // 3. Cancelar a mensagem de carrinho abandonado no QStash!
+        const qstashId = checkout?.metadata?.qstashMessageId || payload?.data?.checkout?.metadata?.qstashMessageId;
+        if (qstashId) {
+          try {
+            console.log(`🗑️ Cancelando mensagem de abandono no QStash: ${qstashId}`);
+            const qstashClient = new Client({ token: process.env.QSTASH_TOKEN! });
+            await qstashClient.messages.delete(qstashId);
+            console.log('✅ Mensagem de abandono cancelada com sucesso!');
+          } catch (cancelError) {
+            console.error('⚠️ Falha ao cancelar mensagem no QStash:', cancelError);
+          }
         }
         
         break;

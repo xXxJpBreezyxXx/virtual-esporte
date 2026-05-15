@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { Client } from '@upstash/qstash';
+import { sendWhatsAppMessage } from '@/lib/whatsapp';
 
 const ABACATE_API_URL = 'https://api.abacatepay.com/v2';
 const API_KEY = process.env.APIABACATEPAY;
@@ -96,7 +98,29 @@ export async function POST(request: Request) {
       }
     }
 
-    // 3. Create Checkout
+    // 3. Setup Abandoned Cart Recovery via Upstash QStash
+    let qstashMessageId = '';
+    try {
+      const qstashClient = new Client({ token: process.env.QSTASH_TOKEN! });
+      
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      const response = await qstashClient.publishJSON({
+        url: `${baseUrl}/api/recover-cart`,
+        body: {
+          customerName: customer.name,
+          customerPhone: customer.phone,
+          productName: `${productName} - Tamanho ${size}`
+        },
+        delay: "15m", // 15 minutes delay
+      });
+      qstashMessageId = response.messageId;
+      console.log('✅ QStash Scheduled:', qstashMessageId);
+    } catch (qError) {
+      console.error('⚠️ Falha ao agendar recuperação no QStash:', qError);
+      // We don't throw here to not break the checkout
+    }
+
+    // 4. Create Checkout
     console.log('Creating checkout for customer:', customerId);
     const checkoutResponse = await fetch(`${ABACATE_API_URL}/checkouts/create`, {
       method: 'POST',
@@ -120,6 +144,7 @@ export async function POST(request: Request) {
           estado: customer.address.state,
           cep: customer.address.cep,
           whatsapp: customer.phone.replace(/\D/g, ''),
+          qstashMessageId: qstashMessageId, // Injecting the ID here
         },
         methods: ['PIX', 'CARD'],
         returnUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/obrigado`,
@@ -134,7 +159,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: checkoutData.error || 'Erro ao gerar link de pagamento.' }, { status: 400 });
     }
 
-    return NextResponse.json({ url: checkoutData.data.url });
+    const checkoutUrl = checkoutData.data.url;
+
+    // 5. Send Immediate WhatsApp Message
+    try {
+      const msg = `Olá ${customer.name}! Seu pedido da camisa da Seleção foi reservado com sucesso! ⚽\n\nAcesse o link seguro abaixo para gerar o PIX ou pagar no cartão:\n${checkoutUrl}\n\nSeu pedido está garantido por 15 minutos! ⏳`;
+      await sendWhatsAppMessage(customer.phone, msg);
+    } catch (wError) {
+      console.error('⚠️ Falha ao enviar WhatsApp imediato:', wError);
+    }
+
+    return NextResponse.json({ url: checkoutUrl });
   } catch (error: any) {
     console.error('Checkout Critical Error:', error);
     return NextResponse.json({ error: 'Erro interno ao processar seu pedido.' }, { status: 500 });
