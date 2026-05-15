@@ -55,6 +55,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Ensure customer exists or create it
+    let customerId = '';
     const customerResponse = await fetch(`${ABACATE_API_URL}/customers/create`, {
       method: 'POST',
       headers: {
@@ -71,13 +72,32 @@ export async function POST(request: Request) {
     });
 
     const customerData = await customerResponse.json();
-    if (!customerData.success) {
-      return NextResponse.json({ error: customerData.error || 'Failed to create customer' }, { status: 400 });
+    
+    if (customerData.success) {
+      customerId = customerData.data.id;
+    } else {
+      // If customer already exists or creation failed, try to find them by email/taxId
+      console.log('Customer creation returned non-success, attempting to find existing customer...');
+      const listCustRes = await fetch(`${ABACATE_API_URL}/customers/list`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${API_KEY}` },
+      });
+      const listCustData = await listCustRes.json();
+      const existingCustomer = listCustData.data?.find((c: any) => 
+        c.email === customer.email || c.taxId === customer.taxId.replace(/\D/g, '')
+      );
+      
+      if (existingCustomer) {
+        customerId = existingCustomer.id;
+      } else {
+        return NextResponse.json({ 
+          error: customerData.error || 'Falha ao identificar cliente no sistema de pagamento.' 
+        }, { status: 400 });
+      }
     }
 
-    const customerId = customerData.data.id;
-
     // 3. Create Checkout
+    console.log('Creating checkout for customer:', customerId);
     const checkoutResponse = await fetch(`${ABACATE_API_URL}/checkouts/create`, {
       method: 'POST',
       headers: {
@@ -101,20 +121,21 @@ export async function POST(request: Request) {
           cep: customer.address.cep,
         },
         methods: ['PIX', 'CARD'],
-        returnUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/?status=success`,
-        completionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/?status=success`,
+        returnUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/obrigado`,
+        completionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/obrigado`,
       }),
     });
 
     const checkoutData = await checkoutResponse.json();
 
     if (!checkoutData.success) {
-      return NextResponse.json({ error: checkoutData.error || 'Failed to create checkout' }, { status: 400 });
+      console.error('AbacatePay Checkout Error:', checkoutData);
+      return NextResponse.json({ error: checkoutData.error || 'Erro ao gerar link de pagamento.' }, { status: 400 });
     }
 
     return NextResponse.json({ url: checkoutData.data.url });
   } catch (error: any) {
-    console.error('Checkout error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    console.error('Checkout Critical Error:', error);
+    return NextResponse.json({ error: 'Erro interno ao processar seu pedido.' }, { status: 500 });
   }
 }
