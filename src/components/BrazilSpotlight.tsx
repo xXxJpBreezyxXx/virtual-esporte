@@ -111,6 +111,55 @@ export default function BrazilSpotlight() {
               transition={{ duration: 0.4 }}
               className={`rounded-3xl overflow-hidden border flex flex-col md:flex-row bg-black/60 backdrop-blur-xl shadow-2xl ${current.borderColor}`}
             >
+              <div className={`md:w-1/2 min-h-[400px] flex items-center justify-center relative p-8 ${current.mediaType === 'video' ? 'bg-black' : ''}`}>
+                <Image 
+                  src="/images/logoFIFA.png" 
+                  alt="FIFA Logo" 
+                  width={56}
+                  height={56}
+                  className="absolute bottom-4 right-4 md:bottom-6 md:right-6 w-10 md:w-14 h-auto z-30 opacity-90 drop-shadow-md rounded-xl bg-white/10 backdrop-blur-sm p-1 border border-white/20" 
+                />
+                
+                {/* Glow behind media - hidden for video so we don't see the rectangular video edges */}
+                {current.mediaType === 'image' && (
+                  <div className={`absolute inset-0 opacity-20 blur-[80px] rounded-full m-12 animate-pulse ${activeTab === 'home' ? 'bg-[#FFD700]' : 'bg-[#1C4FC4]'}`} />
+                )}
+
+                {current.mediaType === 'video' ? (
+                  <motion.video
+                    ref={videoRef as any}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                    src={current.mediaUrl}
+                    preload="auto"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-contain relative z-10 drop-shadow-2xl"
+                    style={{ 
+                      width: "511px",
+                      height: "500px",
+                      maxWidth: "100%"
+                    }}
+                  />
+                ) : (
+                  <div className="relative w-full h-full min-h-[500px]">
+                    <MotionImage
+                      initial={{ rotateY: 15, scale: 0.9 }}
+                      animate={{ rotateY: 0, scale: 1 }}
+                      transition={{ duration: 0.8, type: "spring" }}
+                      src={current.mediaUrl}
+                      alt={current.title}
+                      fill
+                      className="object-contain relative z-10 drop-shadow-2xl animate-float"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
+                )}
+              </div>
+
               <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative z-10">
                 <div className="inline-block px-3 py-1 bg-white/10 rounded-full text-sm font-bold text-white uppercase tracking-wider mb-4 border border-white/20 w-max">
                   {current.badge}
@@ -171,55 +220,6 @@ export default function BrazilSpotlight() {
                   <div className="flex justify-center sm:justify-start">
                   </div>
                 </div>
-              </div>
-
-              <div className={`md:w-1/2 min-h-[400px] flex items-center justify-center relative p-8 ${current.mediaType === 'video' ? 'bg-black' : ''}`}>
-                <Image 
-                  src="/images/logoFIFA.png" 
-                  alt="FIFA Logo" 
-                  width={56}
-                  height={56}
-                  className="absolute bottom-4 right-4 md:bottom-6 md:right-6 w-10 md:w-14 h-auto z-30 opacity-90 drop-shadow-md rounded-xl bg-white/10 backdrop-blur-sm p-1 border border-white/20" 
-                />
-                
-                {/* Glow behind media - hidden for video so we don't see the rectangular video edges */}
-                {current.mediaType === 'image' && (
-                  <div className={`absolute inset-0 opacity-20 blur-[80px] rounded-full m-12 animate-pulse ${activeTab === 'home' ? 'bg-[#FFD700]' : 'bg-[#1C4FC4]'}`} />
-                )}
-
-                {current.mediaType === 'video' ? (
-                  <motion.video
-                    ref={videoRef as any}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8 }}
-                    src={current.mediaUrl}
-                    preload="auto"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-contain relative z-10 drop-shadow-2xl"
-                    style={{ 
-                      width: "511px",
-                      height: "500px",
-                      maxWidth: "100%"
-                    }}
-                  />
-                ) : (
-                  <div className="relative w-full h-full min-h-[500px]">
-                    <MotionImage
-                      initial={{ rotateY: 15, scale: 0.9 }}
-                      animate={{ rotateY: 0, scale: 1 }}
-                      transition={{ duration: 0.8, type: "spring" }}
-                      src={current.mediaUrl}
-                      alt={current.title}
-                      fill
-                      className="object-contain relative z-10 drop-shadow-2xl animate-float"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                  </div>
-                )}
               </div>
             </motion.div>
           </AnimatePresence>
