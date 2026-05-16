@@ -10,18 +10,18 @@ import Footer from "@/components/Footer";
 export default function ThankYouPage() {
   useEffect(() => {
     // GTM Event: purchase
-    // O valor está hardcoded como 159.90 pois todas as camisas estão com esse preço único.
+    // O valor está hardcoded como 115.00 pois todas as camisas estão com esse preço único.
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
       (window as any).dataLayer.push({
         event: 'purchase',
         ecommerce: {
           transaction_id: `T_${new Date().getTime()}`,
-          value: 159.90,
+          value: 115.00,
           currency: 'BRL',
           items: [{
             item_id: 'camisa-worldcup',
             item_name: 'Camisa Seleção (Personalizada)',
-            price: 159.90,
+            price: 115.00,
             quantity: 1
           }]
         }

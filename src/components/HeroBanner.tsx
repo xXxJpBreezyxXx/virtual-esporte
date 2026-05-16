@@ -48,7 +48,7 @@ export default function HeroBanner() {
   const slide = slides[currentSlide];
 
   return (
-    <section id="inicio" className="relative pt-24 pb-12 sm:pt-32 sm:pb-20 overflow-hidden min-h-[90vh] flex items-center">
+    <section id="inicio" className="relative py-12 sm:py-20 overflow-hidden min-h-[80vh] flex items-center">
       {/* Background patterns */}
       <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
         <div className="absolute top-0 -left-1/4 w-1/2 h-full bg-[#C9A84C] blur-[120px] rounded-full animate-blob mix-blend-screen" />

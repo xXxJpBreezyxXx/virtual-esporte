@@ -37,8 +37,15 @@ export default function MobileCTA() {
             onClick={() => openCheckout({
               id: 'mobile-cta-brasil',
               name: 'Camisa Brasil 2026 - Titular',
-              price: 159.90,
-              image: '/images/brazil_home.png'
+              price: 115.00,
+              image: '/images/brasil/amarelo/1.png',
+              gallery: [
+                '/images/brasil/amarelo/1.png',
+                '/images/brasil/amarelo/2.png',
+                '/images/brasil/amarelo/3.png',
+                '/images/brasil/amarelo/4.png',
+                '/images/brasil/amarelo/5.png'
+              ]
             })}
             className="flex items-center justify-center gap-2 w-full bg-[#FFD700] text-[#009C3B] font-extrabold py-4 px-6 rounded-full shadow-lg shadow-[#FFD700]/30 cursor-pointer"
           >

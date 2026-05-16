@@ -50,7 +50,7 @@ export default function BrazilSpotlight() {
   const current = versions[activeTab];
 
   return (
-    <section ref={sectionRef} className="py-20 relative overflow-hidden bg-black" id="brasil">
+    <section ref={sectionRef} className="pt-32 pb-20 relative overflow-hidden bg-black" id="brasil">
       {/* Imagem de Fundo Gerada - Estádio Épico */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-90" 
@@ -145,7 +145,7 @@ export default function BrazilSpotlight() {
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-400">Versão Torcedor</span>
                       <div className="flex items-center gap-3">
-                        <span className="text-3xl font-bold text-[#3CAC3B]">R$ 159,90</span>
+                        <span className="text-3xl font-bold text-[#3CAC3B]">R$ 115,00</span>
                         <span className="text-sm opacity-50 line-through">R$ 299,90</span>
                       </div>
                     </div>
@@ -155,7 +155,7 @@ export default function BrazilSpotlight() {
                     onClick={() => openCheckout({
                       id: `brazil-${current.id}`,
                       name: current.title,
-                      price: 159.90,
+                      price: 115.00,
                       image: activeTab === 'home' ? '/images/brazil_home.png' : '/images/brazil_away.png',
                       gallery: activeTab === 'home'
                         ? ['/images/brasil/amarelo/1.png', '/images/brasil/amarelo/2.png', '/images/brasil/amarelo/3.png', '/images/brasil/amarelo/4.png', '/images/brasil/amarelo/5.png']

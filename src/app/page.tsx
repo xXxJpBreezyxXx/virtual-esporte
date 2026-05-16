@@ -12,9 +12,9 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#020F2A] overflow-x-hidden">
       <Header />
-      <HeroBanner />
-      <FeatureStrip />
       <BrazilSpotlight />
+      <FeatureStrip />
+      <HeroBanner />
       <NationsGrid />
       <HowToBuy />
       <SocialProof />
